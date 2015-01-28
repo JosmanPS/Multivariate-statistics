@@ -40,7 +40,7 @@ Ahora escribiremos las tablas de probabilidad condicional según nuestro conocim
 
 ```{r}
 p_tiempo_suf <- expand.grid(tiempo_suficiente=tiempo_suf)
-p_tiempo_suf$prob <- c(0.5, 0.5)
+p_tiempo_suf$prob_tiempo <- c(0.5, 0.5)
 p_tiempo_suf
 ```
 
@@ -49,7 +49,7 @@ p_tiempo_suf
 ```{r}
 p_estud_parc <- expand.grid(tiempo_suficiente=tiempo_suf, 
                             estudie_parcial=estud_parc)
-p_estud_parc$prob <- c(0.8, 0.4, 0.2, 0.6)
+p_estud_parc$prob_est_parc <- c(0.8, 0.4, 0.2, 0.6)
 p_estud_parc
 ```
 
@@ -58,7 +58,7 @@ p_estud_parc
 ```{r}
 p_hice_tareas <- expand.grid(tiempo_suficiente=tiempo_suf, 
                             hice_tareas=hice_tareas)
-p_hice_tareas$prob <- c(0.8, 0.2, 0.2, 0.8)
+p_hice_tareas$prob_hice_tareas <- c(0.8, 0.2, 0.2, 0.8)
 p_hice_tareas
 ```
 
@@ -67,7 +67,7 @@ p_hice_tareas
 ```{r}
 p_estud_final <- expand.grid(tiempo_suficiente=tiempo_suf, 
                             estudie_final=estud_final)
-p_estud_final$prob <- c(1, 0.3, 0, 0.7)
+p_estud_final$prob_est_final <- c(1, 0.3, 0, 0.7)
 p_estud_final
 ```
 
@@ -76,7 +76,7 @@ p_estud_final
 ```{r}
 p_pase_parc <- expand.grid(estudie_parcial=estud_parc, 
                            hice_tareas=hice_tareas, pase_parcial=pase_parc)
-p_pase_parc$prob <- c(1, 0.6, 0.8, 0.4, 0, 0.4, 0.2, 0.6)
+p_pase_parc$prob_pase_parc <- c(1, 0.6, 0.8, 0.4, 0, 0.4, 0.2, 0.6)
 p_pase_parc
 ```
 
@@ -87,11 +87,32 @@ p_pase_mat <- expand.grid(pase_parcial=pase_parc,
                           hice_tareas=hice_tareas,
                           estudie_final=estud_final,
                           pase_materia=pase_materia)
-p_pase_mat$prob <- c(1, 0.7, 0.6, 0.5, 0.9, 0.6, 0.5, 0.3,
+p_pase_mat$prob_pase_mat <- c(1, 0.7, 0.6, 0.5, 0.9, 0.6, 0.5, 0.3,
                      0, 0.3, 0.4, 0.5, 0.1, 0.4, 0.5, 0.7)
 p_pase_mat
 ```
 
+
+##Probabilidad conjunta##
+
+Ahora haremos la unión de las probabilidades para tener la relación de todas.
+
+```{r}
+p1 <- inner_join(p_pase_mat, p_pase_parc)
+p2 <- inner_join(p1, p_estud_final)
+p3 <- inner_join(p2, p_hice_tareas)
+p4 <- inner_join(p3, p_estud_parc)
+p_conjunta <- inner_join(p4, p_tiempo_suf)
+
+# Calculamos la probabilidad conjunta
+p_conjunta$prob <- p_conjunta$prob_pase_mat * p_conjunta$prob_pase_parc *
+  p_conjunta$prob_est_final * p_conjunta$prob_hice_tareas *
+  p_conjunta$prob_est_parc * p_conjunta$prob_tiempo
+
+p_conjunta
+```
+
+Tuve problemas para continuar ya que el paquete bnlearn no es compatible con mi versión de R :(.
 
 
 

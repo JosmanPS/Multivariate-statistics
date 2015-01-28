@@ -81,63 +81,63 @@ pase_materia &lt;- c('sí','no')</code></pre>
 <div id="tiempo-suficiente" class="section level3">
 <h3>Tiempo suficiente</h3>
 <pre class="r"><code>p_tiempo_suf &lt;- expand.grid(tiempo_suficiente=tiempo_suf)
-p_tiempo_suf$prob &lt;- c(0.5, 0.5)
+p_tiempo_suf$prob_tiempo &lt;- c(0.5, 0.5)
 p_tiempo_suf</code></pre>
-<pre><code>##   tiempo_suficiente prob
-## 1                sí  0.5
-## 2                no  0.5</code></pre>
+<pre><code>##   tiempo_suficiente prob_tiempo
+## 1                sí         0.5
+## 2                no         0.5</code></pre>
 </div>
 <div id="estudie-para-parciales" class="section level3">
 <h3>Estudié para parciales</h3>
 <pre class="r"><code>p_estud_parc &lt;- expand.grid(tiempo_suficiente=tiempo_suf, 
                             estudie_parcial=estud_parc)
-p_estud_parc$prob &lt;- c(0.8, 0.4, 0.2, 0.6)
+p_estud_parc$prob_est_parc &lt;- c(0.8, 0.4, 0.2, 0.6)
 p_estud_parc</code></pre>
-<pre><code>##   tiempo_suficiente estudie_parcial prob
-## 1                sí              sí  0.8
-## 2                no              sí  0.4
-## 3                sí              no  0.2
-## 4                no              no  0.6</code></pre>
+<pre><code>##   tiempo_suficiente estudie_parcial prob_est_parc
+## 1                sí              sí           0.8
+## 2                no              sí           0.4
+## 3                sí              no           0.2
+## 4                no              no           0.6</code></pre>
 </div>
 <div id="hice-tareas" class="section level3">
 <h3>Hice tareas</h3>
 <pre class="r"><code>p_hice_tareas &lt;- expand.grid(tiempo_suficiente=tiempo_suf, 
                             hice_tareas=hice_tareas)
-p_hice_tareas$prob &lt;- c(0.8, 0.2, 0.2, 0.8)
+p_hice_tareas$prob_hice_tareas &lt;- c(0.8, 0.2, 0.2, 0.8)
 p_hice_tareas</code></pre>
-<pre><code>##   tiempo_suficiente hice_tareas prob
-## 1                sí          sí  0.8
-## 2                no          sí  0.2
-## 3                sí          no  0.2
-## 4                no          no  0.8</code></pre>
+<pre><code>##   tiempo_suficiente hice_tareas prob_hice_tareas
+## 1                sí          sí              0.8
+## 2                no          sí              0.2
+## 3                sí          no              0.2
+## 4                no          no              0.8</code></pre>
 </div>
 <div id="estudie-para-el-final" class="section level3">
 <h3>Estudie para el final</h3>
 <pre class="r"><code>p_estud_final &lt;- expand.grid(tiempo_suficiente=tiempo_suf, 
                             estudie_final=estud_final)
-p_estud_final$prob &lt;- c(1, 0.3, 0, 0.7)
+p_estud_final$prob_est_final &lt;- c(1, 0.3, 0, 0.7)
 p_estud_final</code></pre>
-<pre><code>##   tiempo_suficiente estudie_final prob
-## 1                sí            sí  1.0
-## 2                no            sí  0.3
-## 3                sí            no  0.0
-## 4                no            no  0.7</code></pre>
+<pre><code>##   tiempo_suficiente estudie_final prob_est_final
+## 1                sí            sí            1.0
+## 2                no            sí            0.3
+## 3                sí            no            0.0
+## 4                no            no            0.7</code></pre>
 </div>
 <div id="pase-los-parciales" class="section level3">
 <h3>Pasé los parciales</h3>
 <pre class="r"><code>p_pase_parc &lt;- expand.grid(estudie_parcial=estud_parc, 
                            hice_tareas=hice_tareas, pase_parcial=pase_parc)
-p_pase_parc$prob &lt;- c(1, 0.6, 0.8, 0.4, 0, 0.4, 0.2, 0.6)
+p_pase_parc$prob_pase_parc &lt;- c(1, 0.6, 0.8, 0.4, 0, 0.4, 0.2, 0.6)
 p_pase_parc</code></pre>
-<pre><code>##   estudie_parcial hice_tareas pase_parcial prob
-## 1              sí          sí           sí  1.0
-## 2              no          sí           sí  0.6
-## 3              sí          no           sí  0.8
-## 4              no          no           sí  0.4
-## 5              sí          sí           no  0.0
-## 6              no          sí           no  0.4
-## 7              sí          no           no  0.2
-## 8              no          no           no  0.6</code></pre>
+<pre><code>##   estudie_parcial hice_tareas pase_parcial prob_pase_parc
+## 1              sí          sí           sí            1.0
+## 2              no          sí           sí            0.6
+## 3              sí          no           sí            0.8
+## 4              no          no           sí            0.4
+## 5              sí          sí           no            0.0
+## 6              no          sí           no            0.4
+## 7              sí          no           no            0.2
+## 8              no          no           no            0.6</code></pre>
 </div>
 <div id="pase-la-materia" class="section level3">
 <h3>Pase la materia</h3>
@@ -145,26 +145,242 @@ p_pase_parc</code></pre>
                           hice_tareas=hice_tareas,
                           estudie_final=estud_final,
                           pase_materia=pase_materia)
-p_pase_mat$prob &lt;- c(1, 0.7, 0.6, 0.5, 0.9, 0.6, 0.5, 0.3,
+p_pase_mat$prob_pase_mat &lt;- c(1, 0.7, 0.6, 0.5, 0.9, 0.6, 0.5, 0.3,
                      0, 0.3, 0.4, 0.5, 0.1, 0.4, 0.5, 0.7)
 p_pase_mat</code></pre>
-<pre><code>##    pase_parcial hice_tareas estudie_final pase_materia prob
-## 1            sí          sí            sí           sí  1.0
-## 2            no          sí            sí           sí  0.7
-## 3            sí          no            sí           sí  0.6
-## 4            no          no            sí           sí  0.5
-## 5            sí          sí            no           sí  0.9
-## 6            no          sí            no           sí  0.6
-## 7            sí          no            no           sí  0.5
-## 8            no          no            no           sí  0.3
-## 9            sí          sí            sí           no  0.0
-## 10           no          sí            sí           no  0.3
-## 11           sí          no            sí           no  0.4
-## 12           no          no            sí           no  0.5
-## 13           sí          sí            no           no  0.1
-## 14           no          sí            no           no  0.4
-## 15           sí          no            no           no  0.5
-## 16           no          no            no           no  0.7</code></pre>
+<pre><code>##    pase_parcial hice_tareas estudie_final pase_materia prob_pase_mat
+## 1            sí          sí            sí           sí           1.0
+## 2            no          sí            sí           sí           0.7
+## 3            sí          no            sí           sí           0.6
+## 4            no          no            sí           sí           0.5
+## 5            sí          sí            no           sí           0.9
+## 6            no          sí            no           sí           0.6
+## 7            sí          no            no           sí           0.5
+## 8            no          no            no           sí           0.3
+## 9            sí          sí            sí           no           0.0
+## 10           no          sí            sí           no           0.3
+## 11           sí          no            sí           no           0.4
+## 12           no          no            sí           no           0.5
+## 13           sí          sí            no           no           0.1
+## 14           no          sí            no           no           0.4
+## 15           sí          no            no           no           0.5
+## 16           no          no            no           no           0.7</code></pre>
+</div>
+<div id="probabilidad-conjunta" class="section level2">
+<h2>Probabilidad conjunta</h2>
+<p>Ahora haremos la unión de las probabilidades para tener la relación de todas.</p>
+<pre class="r"><code>p1 &lt;- inner_join(p_pase_mat, p_pase_parc)</code></pre>
+<pre><code>## Joining by: c(&quot;pase_parcial&quot;, &quot;hice_tareas&quot;)</code></pre>
+<pre class="r"><code>p2 &lt;- inner_join(p1, p_estud_final)</code></pre>
+<pre><code>## Joining by: &quot;estudie_final&quot;</code></pre>
+<pre class="r"><code>p3 &lt;- inner_join(p2, p_hice_tareas)</code></pre>
+<pre><code>## Joining by: c(&quot;hice_tareas&quot;, &quot;tiempo_suficiente&quot;)</code></pre>
+<pre class="r"><code>p4 &lt;- inner_join(p3, p_estud_parc)</code></pre>
+<pre><code>## Joining by: c(&quot;estudie_parcial&quot;, &quot;tiempo_suficiente&quot;)</code></pre>
+<pre class="r"><code>p_conjunta &lt;- inner_join(p4, p_tiempo_suf)</code></pre>
+<pre><code>## Joining by: &quot;tiempo_suficiente&quot;</code></pre>
+<pre class="r"><code># Calculamos la probabilidad conjunta
+p_conjunta$prob &lt;- p_conjunta$prob_pase_mat * p_conjunta$prob_pase_parc *
+  p_conjunta$prob_est_final * p_conjunta$prob_hice_tareas *
+  p_conjunta$prob_est_parc * p_conjunta$prob_tiempo
+
+p_conjunta</code></pre>
+<pre><code>##    pase_parcial hice_tareas estudie_final pase_materia prob_pase_mat
+## 1            sí          sí            sí           sí           1.0
+## 2            sí          sí            sí           sí           1.0
+## 3            sí          sí            sí           sí           1.0
+## 4            sí          sí            sí           sí           1.0
+## 5            no          sí            sí           sí           0.7
+## 6            no          sí            sí           sí           0.7
+## 7            no          sí            sí           sí           0.7
+## 8            no          sí            sí           sí           0.7
+## 9            sí          no            sí           sí           0.6
+## 10           sí          no            sí           sí           0.6
+## 11           sí          no            sí           sí           0.6
+## 12           sí          no            sí           sí           0.6
+## 13           no          no            sí           sí           0.5
+## 14           no          no            sí           sí           0.5
+## 15           no          no            sí           sí           0.5
+## 16           no          no            sí           sí           0.5
+## 17           sí          sí            no           sí           0.9
+## 18           sí          sí            no           sí           0.9
+## 19           sí          sí            no           sí           0.9
+## 20           sí          sí            no           sí           0.9
+## 21           no          sí            no           sí           0.6
+## 22           no          sí            no           sí           0.6
+## 23           no          sí            no           sí           0.6
+## 24           no          sí            no           sí           0.6
+## 25           sí          no            no           sí           0.5
+## 26           sí          no            no           sí           0.5
+## 27           sí          no            no           sí           0.5
+## 28           sí          no            no           sí           0.5
+## 29           no          no            no           sí           0.3
+## 30           no          no            no           sí           0.3
+## 31           no          no            no           sí           0.3
+## 32           no          no            no           sí           0.3
+## 33           sí          sí            sí           no           0.0
+## 34           sí          sí            sí           no           0.0
+## 35           sí          sí            sí           no           0.0
+## 36           sí          sí            sí           no           0.0
+## 37           no          sí            sí           no           0.3
+## 38           no          sí            sí           no           0.3
+## 39           no          sí            sí           no           0.3
+## 40           no          sí            sí           no           0.3
+## 41           sí          no            sí           no           0.4
+## 42           sí          no            sí           no           0.4
+## 43           sí          no            sí           no           0.4
+## 44           sí          no            sí           no           0.4
+## 45           no          no            sí           no           0.5
+## 46           no          no            sí           no           0.5
+## 47           no          no            sí           no           0.5
+## 48           no          no            sí           no           0.5
+## 49           sí          sí            no           no           0.1
+## 50           sí          sí            no           no           0.1
+## 51           sí          sí            no           no           0.1
+## 52           sí          sí            no           no           0.1
+## 53           no          sí            no           no           0.4
+## 54           no          sí            no           no           0.4
+## 55           no          sí            no           no           0.4
+## 56           no          sí            no           no           0.4
+## 57           sí          no            no           no           0.5
+## 58           sí          no            no           no           0.5
+## 59           sí          no            no           no           0.5
+## 60           sí          no            no           no           0.5
+## 61           no          no            no           no           0.7
+## 62           no          no            no           no           0.7
+## 63           no          no            no           no           0.7
+## 64           no          no            no           no           0.7
+##    estudie_parcial prob_pase_parc tiempo_suficiente prob_est_final
+## 1               sí            1.0                sí            1.0
+## 2               sí            1.0                no            0.3
+## 3               no            0.6                sí            1.0
+## 4               no            0.6                no            0.3
+## 5               sí            0.0                sí            1.0
+## 6               sí            0.0                no            0.3
+## 7               no            0.4                sí            1.0
+## 8               no            0.4                no            0.3
+## 9               sí            0.8                sí            1.0
+## 10              sí            0.8                no            0.3
+## 11              no            0.4                sí            1.0
+## 12              no            0.4                no            0.3
+## 13              sí            0.2                sí            1.0
+## 14              sí            0.2                no            0.3
+## 15              no            0.6                sí            1.0
+## 16              no            0.6                no            0.3
+## 17              sí            1.0                sí            0.0
+## 18              sí            1.0                no            0.7
+## 19              no            0.6                sí            0.0
+## 20              no            0.6                no            0.7
+## 21              sí            0.0                sí            0.0
+## 22              sí            0.0                no            0.7
+## 23              no            0.4                sí            0.0
+## 24              no            0.4                no            0.7
+## 25              sí            0.8                sí            0.0
+## 26              sí            0.8                no            0.7
+## 27              no            0.4                sí            0.0
+## 28              no            0.4                no            0.7
+## 29              sí            0.2                sí            0.0
+## 30              sí            0.2                no            0.7
+## 31              no            0.6                sí            0.0
+## 32              no            0.6                no            0.7
+## 33              sí            1.0                sí            1.0
+## 34              sí            1.0                no            0.3
+## 35              no            0.6                sí            1.0
+## 36              no            0.6                no            0.3
+## 37              sí            0.0                sí            1.0
+## 38              sí            0.0                no            0.3
+## 39              no            0.4                sí            1.0
+## 40              no            0.4                no            0.3
+## 41              sí            0.8                sí            1.0
+## 42              sí            0.8                no            0.3
+## 43              no            0.4                sí            1.0
+## 44              no            0.4                no            0.3
+## 45              sí            0.2                sí            1.0
+## 46              sí            0.2                no            0.3
+## 47              no            0.6                sí            1.0
+## 48              no            0.6                no            0.3
+## 49              sí            1.0                sí            0.0
+## 50              sí            1.0                no            0.7
+## 51              no            0.6                sí            0.0
+## 52              no            0.6                no            0.7
+## 53              sí            0.0                sí            0.0
+## 54              sí            0.0                no            0.7
+## 55              no            0.4                sí            0.0
+## 56              no            0.4                no            0.7
+## 57              sí            0.8                sí            0.0
+## 58              sí            0.8                no            0.7
+## 59              no            0.4                sí            0.0
+## 60              no            0.4                no            0.7
+## 61              sí            0.2                sí            0.0
+## 62              sí            0.2                no            0.7
+## 63              no            0.6                sí            0.0
+## 64              no            0.6                no            0.7
+##    prob_hice_tareas prob_est_parc prob_tiempo    prob
+## 1               0.8           0.8         0.5 0.32000
+## 2               0.2           0.4         0.5 0.01200
+## 3               0.8           0.2         0.5 0.04800
+## 4               0.2           0.6         0.5 0.01080
+## 5               0.8           0.8         0.5 0.00000
+## 6               0.2           0.4         0.5 0.00000
+## 7               0.8           0.2         0.5 0.02240
+## 8               0.2           0.6         0.5 0.00504
+## 9               0.2           0.8         0.5 0.03840
+## 10              0.8           0.4         0.5 0.02304
+## 11              0.2           0.2         0.5 0.00480
+## 12              0.8           0.6         0.5 0.01728
+## 13              0.2           0.8         0.5 0.00800
+## 14              0.8           0.4         0.5 0.00480
+## 15              0.2           0.2         0.5 0.00600
+## 16              0.8           0.6         0.5 0.02160
+## 17              0.8           0.8         0.5 0.00000
+## 18              0.2           0.4         0.5 0.02520
+## 19              0.8           0.2         0.5 0.00000
+## 20              0.2           0.6         0.5 0.02268
+## 21              0.8           0.8         0.5 0.00000
+## 22              0.2           0.4         0.5 0.00000
+## 23              0.8           0.2         0.5 0.00000
+## 24              0.2           0.6         0.5 0.01008
+## 25              0.2           0.8         0.5 0.00000
+## 26              0.8           0.4         0.5 0.04480
+## 27              0.2           0.2         0.5 0.00000
+## 28              0.8           0.6         0.5 0.03360
+## 29              0.2           0.8         0.5 0.00000
+## 30              0.8           0.4         0.5 0.00672
+## 31              0.2           0.2         0.5 0.00000
+## 32              0.8           0.6         0.5 0.03024
+## 33              0.8           0.8         0.5 0.00000
+## 34              0.2           0.4         0.5 0.00000
+## 35              0.8           0.2         0.5 0.00000
+## 36              0.2           0.6         0.5 0.00000
+## 37              0.8           0.8         0.5 0.00000
+## 38              0.2           0.4         0.5 0.00000
+## 39              0.8           0.2         0.5 0.00960
+## 40              0.2           0.6         0.5 0.00216
+## 41              0.2           0.8         0.5 0.02560
+## 42              0.8           0.4         0.5 0.01536
+## 43              0.2           0.2         0.5 0.00320
+## 44              0.8           0.6         0.5 0.01152
+## 45              0.2           0.8         0.5 0.00800
+## 46              0.8           0.4         0.5 0.00480
+## 47              0.2           0.2         0.5 0.00600
+## 48              0.8           0.6         0.5 0.02160
+## 49              0.8           0.8         0.5 0.00000
+## 50              0.2           0.4         0.5 0.00280
+## 51              0.8           0.2         0.5 0.00000
+## 52              0.2           0.6         0.5 0.00252
+## 53              0.8           0.8         0.5 0.00000
+## 54              0.2           0.4         0.5 0.00000
+## 55              0.8           0.2         0.5 0.00000
+## 56              0.2           0.6         0.5 0.00672
+## 57              0.2           0.8         0.5 0.00000
+## 58              0.8           0.4         0.5 0.04480
+## 59              0.2           0.2         0.5 0.00000
+## 60              0.8           0.6         0.5 0.03360
+## 61              0.2           0.8         0.5 0.00000
+## 62              0.8           0.4         0.5 0.01568
+## 63              0.2           0.2         0.5 0.00000
+## 64              0.8           0.6         0.5 0.07056</code></pre>
+<p>Tuve problemas para continuar ya que el paquete bnlearn no es compatible con mi versión de R :(.</p>
 </div>
 
 
