@@ -1,0 +1,103 @@
+---
+title: "Tarea 2 - Redes bayesianas"
+author: "José Manuel Proudinat"
+output: html_document
+---
+
+```{r, message=FALSE}
+library(igraph)
+library(dplyr)
+```
+
+Para esta tarea diseñé una red bayesiana que representa mis probabilidades de pasar la materia de Estadística Multivariada. Presentamos primero el diseño de la gráfica:
+
+```{r}
+gr <- graph(c(1, 2, 1, 3, 1, 4, 2, 5, 3, 5, 3, 6, 4, 6, 5, 6))
+
+plot(gr, 
+     vertex.label = c('Tiempo suf', 'Estud parc', 'Hice tareas', 
+                      'Estud final', 'Pasé parc', 'Pasé materia'), 
+     layout = matrix(c(0, 0.5, 2, 1, 2, 0.5, 2, 0, 4, 0.75, 6, 0.5), byrow = TRUE, ncol = 2),
+     vertex.size = 23, vertex.color = 'salmon', vertex.label.cex = 1.2,
+     vertex.label.color = 'gray40', vertex.frame.color = NA, asp = 0.5, 
+     edge.arrow.size = 1)
+```
+
+Definimos las categorías en las que pueden incurrir nuestras variables. En este caso todas pueden ser 'sí' o 'no'.
+
+```{r}
+tiempo_suf <- c('sí','no')
+estud_parc <- c('sí','no')
+hice_tareas <- c('sí','no')
+estud_final <- c('sí','no')
+pase_parc <- c('sí','no')
+pase_materia <- c('sí','no')
+```
+
+Ahora escribiremos las tablas de probabilidad condicional según nuestro conocimiento experto.
+
+###Tiempo suficiente###
+
+```{r}
+p_tiempo_suf <- expand.grid(tiempo_suficiente=tiempo_suf)
+p_tiempo_suf$prob <- c(0.5, 0.5)
+p_tiempo_suf
+```
+
+###Estudié para parciales###
+
+```{r}
+p_estud_parc <- expand.grid(tiempo_suficiente=tiempo_suf, 
+                            estudie_parcial=estud_parc)
+p_estud_parc$prob <- c(0.8, 0.4, 0.2, 0.6)
+p_estud_parc
+```
+
+###Hice tareas###
+
+```{r}
+p_hice_tareas <- expand.grid(tiempo_suficiente=tiempo_suf, 
+                            hice_tareas=hice_tareas)
+p_hice_tareas$prob <- c(0.8, 0.2, 0.2, 0.8)
+p_hice_tareas
+```
+
+###Estudie para el final###
+
+```{r}
+p_estud_final <- expand.grid(tiempo_suficiente=tiempo_suf, 
+                            estudie_final=estud_final)
+p_estud_final$prob <- c(1, 0.3, 0, 0.7)
+p_estud_final
+```
+
+###Pasé los parciales###
+
+```{r}
+p_pase_parc <- expand.grid(estudie_parcial=estud_parc, 
+                           hice_tareas=hice_tareas, pase_parcial=pase_parc)
+p_pase_parc$prob <- c(1, 0.6, 0.8, 0.4, 0, 0.4, 0.2, 0.6)
+p_pase_parc
+```
+
+###Pase la materia###
+
+```{r}
+p_pase_mat <- expand.grid(pase_parcial=pase_parc, 
+                          hice_tareas=hice_tareas,
+                          estudie_final=estud_final,
+                          pase_materia=pase_materia)
+p_pase_mat$prob <- c(1, 0.7, 0.6, 0.5, 0.9, 0.6, 0.5, 0.3,
+                     0, 0.3, 0.4, 0.5, 0.1, 0.4, 0.5, 0.7)
+p_pase_mat
+```
+
+
+
+
+
+
+
+
+
+
