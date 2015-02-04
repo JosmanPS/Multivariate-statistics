@@ -7,6 +7,8 @@ output: html_document
 ```{r, message=FALSE}
 library(igraph)
 library(dplyr)
+library(bnlearn)
+library(gRain)
 ```
 
 Para esta tarea diseñé una red bayesiana que representa mis probabilidades de pasar la materia de Estadística Multivariada. Presentamos primero el diseño de la gráfica:
@@ -15,8 +17,8 @@ Para esta tarea diseñé una red bayesiana que representa mis probabilidades de 
 gr <- graph(c(1, 2, 1, 3, 1, 4, 2, 5, 3, 5, 3, 6, 4, 6, 5, 6))
 
 plot(gr, 
-     vertex.label = c('Tiempo suf', 'Estud parc', 'Hice tareas', 
-                      'Estud final', 'Pasé parc', 'Pasé materia'), 
+     vertex.label = c('Tiempo.suf', 'Estud.parc', 'Hice.tareas', 
+                      'Estud.final', 'Pase.parc', 'Pase.materia'), 
      layout = matrix(c(0, 0.5, 2, 1, 2, 0.5, 2, 0, 4, 0.75, 6, 0.5), byrow = TRUE, ncol = 2),
      vertex.size = 23, vertex.color = 'salmon', vertex.label.cex = 1.2,
      vertex.label.color = 'gray40', vertex.frame.color = NA, asp = 0.5, 
@@ -112,13 +114,87 @@ p_conjunta$prob <- p_conjunta$prob_pase_mat * p_conjunta$prob_pase_parc *
 p_conjunta
 ```
 
-Tuve problemas para continuar ya que el paquete bnlearn no es compatible con mi versión de R :(.
+Ahora crearemos la red bayesiana:
+
+```{r}
+# Creamos los nodos de la gráfica
+graf <- empty.graph(c('Tiempo.suf', 'Estud.parc', 'Hice.tareas',
+                      'Estud.final', 'Pase.parc', 'Pase.materia'))
+
+# Ahora los arcos
+arcs(graf) <- matrix(c('Tiempo.suf', 'Estud.parc', 'Tiempo.suf', 'Hice.tareas',
+                       'Tiempo.suf', 'Estud.final', 'Estud.parc', 'Pase.parc',
+                       'Hice.tareas', 'Pase.parc', 'Estud.final', 'Pase.materia',
+                       'Pase.parc', 'Pase.materia', 'Hice.tareas', 'Pase.materia'),
+                     ncol=2, byrow=T)
+plot(graf)
+
+# Ajustamos el modelo
+data <- p_conjunta %>% select(tiempo_suficiente, estudie_parcial,
+                              hice_tareas, estudie_final, pase_parcial,
+                              pase_materia)
+names(data) <- c('Tiempo.suf', 'Estud.parc', 'Hice.tareas', 'Estud.final', 
+                 'Pase.parc', 'Pase.materia')
+modelo <- bn.fit(graf, data=data)
+```
+
+Nos falta ajustar las probabilidades correctas.
+
+```{r}
+# Tiempo suf
+tab_1 <- table(p_conjunta[,1])
+tab_1[c(1,2)] <- p_tiempo_suf$prob_tiempo
+modelo$Tiempo.suf <- tab_1
+
+# Estud parc | Tiempo suf
+names(p_estud_parc) <- c('Tiempo.suf', 'Estud.parc', 'prob')
+tab_2 <- xtabs(prob ~ Estud.parc + Tiempo.suf, data=p_estud_parc)
+modelo$Estud.parc <- tab_2
+
+# Hice tareas | Tiempo suf
+names(p_hice_tareas) <- c('Tiempo.suf', 'Hice.tareas', 'prob')
+tab_3 <- xtabs(prob ~ Hice.tareas + Tiempo.suf, data=p_hice_tareas)
+modelo$Hice.tareas <- tab_3
+
+# Estud final | Tiempo suf
+names(p_estud_final) <- c('Tiempo.suf', 'Estud.final', 'prob')
+tab_4 <- xtabs(prob ~ Estud.final + Tiempo.suf, data=p_estud_final)
+modelo$Estud.final <- tab_4
+
+# Pasé parc | Estud parc, Hice tareas
+names(p_pase_parc) <- c('Estud.parc', 'Hice.tareas', 'Pase.parc', 'prob')
+tab_5 <- xtabs(prob ~ Pase.parc + Estud.parc + Hice.tareas, data=p_pase_parc)
+modelo$Pase.parc <- tab_5
+
+# Pasé materia | Hice tareas, Estud final, Pasé parc
+names(p_pase_mat) <- c('Pase.parc', 'Hice.tareas', 'Estud.final', 
+                       'Pase.materia', 'prob')
+tab_6 <- xtabs(prob ~ Pase.materia + Hice.tareas + 
+                 Estud.final + Pase.parc, data=p_pase_mat)
+modelo$Pase.materia <- tab_6
+modelo
+```
+
+Ahora que ya tenemos las probabilidades bien definidas haremos algunos querys sobre nuestra red.
+
+```{r}
+comp <- compile(as.grain(modelo))
+
+# Observamos las marginales
+querygrain(comp)
+
+query_1 <- setEvidence(comp, nodes = c('Hice.tareas', 'Estud.parc'),
+                       states = c('sí', 'sí'))
+querygrain(query_1)
+
+query_2 <- setEvidence(comp, nodes = c('Tiempo.suf', 'Hice.tareas', 'Estud.final'),
+                       states = c('no', 'no', 'sí'))
+querygrain(query_2)
+
+query_3 <- setEvidence(comp, nodes = c('Hice.tareas', 'Pase.parc'),
+                       states = c('sí', 'sí'))
+querygrain(query_3)
+```
 
 
-
-
-
-
-
-
-
+Al hacer los mismos querys con la red definida en SAMIAM observé que, con diferencias en ciertos decimales, los resultados son los mismos.
