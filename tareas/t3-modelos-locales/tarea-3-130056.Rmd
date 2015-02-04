@@ -1,0 +1,66 @@
+---
+title: "Tarea 3"
+author: José Manuel Proudinat - 130056
+output: html_document
+---
+
+```{r, message=FALSE}
+# Paquetes
+library(dplyr)
+library(bnlearn)
+library(Rgraphviz)
+```
+
+```{r}
+# Leemos los datos
+setwd("/Users/Josman/Projects/Multivariate-statistics/tareas/t3-modelos-locales")
+admisiones <- read.table('admisiones', head=T, row.names=1, sep=',')
+```
+
+Modelo 1
+======
+
+Haremos un modelo primero para la relación Género -> Admisión. Y observaremos resultados basándonos en datos. Primero tomamos los datos necesarios para este análisis, y generamos la red bayesiana inferida de ellos.
+
+```{r}
+data.mod1 <- admisiones %>% select(Gender, Admit)
+
+# Aprendemos la estructura de la red bayesiana
+net.mod1 <- hc(data.mod1, score='aic')
+# Hacemos el ajuste
+fit.net.mod1 <- bn.fit(net.mod1, data=data.mod1, method='mle')
+graphviz.plot(net.mod1)
+```
+
+Ahora veamos cómo se ven las probabilidades de admisión dado el género de la persona.
+```{r}
+fit.net.mod1[['Admit']]
+```
+
+Podemos notar que, dados los datos, existe una diferencia entre la probabilidad de admisión entre hombres y mujeres. Los hombres muestran una mayor probabilidad de ser admitidos.
+
+Modelo 2
+============
+
+Ahora queremos analizar el modelo Género -> Departamento -> Admisión. Haremos el proceso similar al que hicimos con el modelo anterior.
+
+```{r}
+data.mod2 <- admisiones %>% select(Gender, Dept, Admit)
+
+# Aprendemos la estructura de la red bayesiana
+black <- data.frame(from = c('Gender'), to = c('Admit'))
+net.mod2 <- hc(data.mod2, score='aic', blacklist=black)
+# Hacemos el ajuste
+fit.net.mod2 <- bn.fit(net.mod2, data=data.mod2, method='mle')
+graphviz.plot(net.mod2)
+```
+
+Vemos las probabilidades de ser admitido:
+
+```{r}
+fit.net.mod2
+```
+
+Observando las tablas de probabilidad, notamos que las mujeres hacen más aplicaciones a los departamentos C, D, E y F que, sin importar el género, tienen menos probabilidad de admisión que los otros. Al contrario, los hombres hacen aplicaciones a departamentos con mayor tasa de admisión. Con esto podemos pensar que no necesariamente existe discriminación por género, sino que las aplicaciones se distribuyen de maner distinta y esto es o que genera ese cambio en la tasa de admisión.
+
+Por esta razón es que es posible no indicar una flecha directa de Género a Admisón pues notamos que la relación se da por el departamento.
