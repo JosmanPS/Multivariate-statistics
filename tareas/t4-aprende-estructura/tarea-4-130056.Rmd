@@ -1,0 +1,106 @@
+---
+title: "Tarea 4"
+author: "José Manuel Proudinat - 130056"
+date: "8 de febrero de 2015"
+output: html_document
+---
+
+```{r, message=FALSE}
+library(bnlearn)
+library(dplyr)
+library(arm)
+library(glmnet)
+library(ggplot2)
+
+# Cargamos los datos
+set.seed(3656723)
+insurance_sub <- sample_n(insurance, 3000)
+vars <- c('Age', 'RiskAversion', 'VehicleYear', 'Accident', 'MakeModel', 
+          'DrivQuality', 'Airbag', 'DrivHist', 'SocioEcon', 'Antilock', 
+          'MedCost', 'CarValue')
+insurance_sub <- insurance_sub[ , vars]
+
+# Creamos la estructura
+blacklist_1 <- data.frame(from = vars[-1], to = 'Age')
+blacklist_2 <- data.frame(from = c('MedCost', 'MedCost', 'Accident', 'Accident'), 
+                          to = c('Age', 'SocioEcon', 'MakeModel', 'DrivQuality'))
+blacklist_3 <- data.frame(from = c('Age', 'SocioEcon'), to = c('MedCost'))
+blacklist_4 <- data.frame(from = vars[-1], to = 'SocioEcon')
+blist <- rbind(blacklist_1, blacklist_2, blacklist_3, blacklist_4)
+net_insurance <- hc(insurance[ ,vars], score = 'bic', blacklist = blist)
+graphviz.plot(net_insurance)
+```
+
+###Pregunta 1###
+
+Haremos el ajuste de nuestro modelo con la muestra obtenida.
+
+```{r}
+fit.net_insurance <- bn.fit(net_insurance, data=insurance_sub, method='mle')
+fit.net_insurance
+
+# Exportamos la red
+write.net("~/Projects/Multivariate-statistics/tareas/t4-aprende-estructura/net_insurance.net", fit.net_insurance)
+```
+
+###Pregunta 2###
+
+Se deben cambiar muchas tablas, ya que existen muchos casos para los cuales no hubo eventos en la muestra. Esto ocasiona que no podamos hacer estimaciones sobre muchas combinaciones de categorías en nuestra red. Por ejemplo: 
+
+- RiskAversion = Psychopath
+- Age = Adolescent
+- SocioEcon = {UpperMiddle, Wealthy}
+
+###Pregunta 3###
+
+Ahora haremos estimaciones con modelos logísticos sobre algunos nodos de nuestra red. Seguiremos la gráfica para hacer nuestro modelo. Es decir, haremos la regresión logística en función de los padres del nodo.
+
+####Antilock####
+
+Para modelar este nodo haremos una regresión logística bayesiana. Probaremos los siguientes modelos:
+
+- Antilock ~ MakeModel + VehicleYear
+- Antilock ~ MakeModel + VehicleYear + MakeModel*VehicleYear
+
+```{r}
+mod_1 <- bayesglm(Antilock ~ MakeModel + VehicleYear, data=insurance_sub,
+                  family='binomial', prior.scale=2.5)
+mod_1$aic
+
+mod_2 <- bayesglm(Antilock ~ MakeModel + VehicleYear + MakeModel*VehicleYear, 
+                  data=insurance_sub, family='binomial', prior.scale=2.5)
+mod_2$aic
+```
+
+Observamos que el segundo modelo nos entrega un menor AIC, por lo cual será el que utlizaremos.
+
+```{r}
+mod_2
+```
+
+Ahora estimamos las probabilidades con nuestro modelo.
+
+```{r}
+# creamos una base con todas las combinaciones de niveles de las variables
+grid_1 <- expand.grid(list(MakeModel = unique(insurance_sub$MakeModel), 
+  VehicleYear = unique(insurance_sub$VehicleYear)),
+  stringsAsFactors = FALSE)
+
+# calculamos la probabilidad para cada caso usando predict
+grid_1$prob <- predict(mod_2, grid_1, type = 'response')
+
+# obtenemos los siguientes resultados
+grid_1 <- grid_1 %>% arrange(prob)
+grid_1
+```
+
+####CarValue####
+
+Para modelar la variable CarValue, haremos el modelo con todas las combinaciones posibles usando una regresión elástica.
+
+```{r, message=FALSE}
+x <- model.matrix(~ -1 + VehicleYear + MakeModel, data=insurance_sub)
+y <- insurance_sub$CarValue
+mod.lasso <- cv.glmnet(x=x, y=y, alpha=0.5, family='multinomial')
+```
+
